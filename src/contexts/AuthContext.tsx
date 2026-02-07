@@ -1,7 +1,10 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
+export type UserRole = "admin" | "normal_user";
+
 interface User {
   username: string;
+  role: UserRole;
 }
 
 interface AuthContextType {
@@ -18,14 +21,20 @@ export const useAuth = () => {
   return ctx;
 };
 
-const MOCK_CREDENTIALS = { username: "admin", password: "admin" };
+const MOCK_USERS = [
+  { username: "admin", password: "admin", role: "admin" as UserRole },
+  { username: "normal_user", password: "user", role: "normal_user" as UserRole },
+];
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
   const login = (username: string, password: string): boolean => {
-    if (username === MOCK_CREDENTIALS.username && password === MOCK_CREDENTIALS.password) {
-      setUser({ username });
+    const found = MOCK_USERS.find(
+      (u) => u.username === username && u.password === password
+    );
+    if (found) {
+      setUser({ username: found.username, role: found.role });
       return true;
     }
     return false;
