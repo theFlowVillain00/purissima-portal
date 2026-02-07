@@ -135,19 +135,22 @@ const Ordini = () => {
           {/* Products Grid */}
           <div>
             <h2 className="mb-4 text-xl font-bold text-foreground">Prodotti Disponibili</h2>
-            <div className="flex flex-wrap gap-3">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
               {products.map((product) => (
-                <button
+                <Card
                   key={product.id}
+                  className="group cursor-pointer border-border bg-card transition-all hover:border-primary hover:shadow-md"
                   onClick={() => addToCart(product)}
-                  className="group flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 transition-all hover:border-primary hover:shadow-md"
                 >
-                  <Package className="h-4 w-4 text-primary" />
-                  <span className="font-medium text-card-foreground">{product.name}</span>
-                  <Badge variant="secondary" className="text-xs">
-                    {product.price}€
-                  </Badge>
-                </button>
+                  <CardContent className="flex flex-col items-center gap-2 p-4">
+                    <Package className="h-8 w-8 text-primary" />
+                    <span className="text-center text-sm font-medium text-card-foreground">
+                      {product.name}
+                    </span>
+                    <Badge variant="secondary">{product.category}</Badge>
+                    <span className="text-lg font-bold text-primary">{product.price}€</span>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </div>
