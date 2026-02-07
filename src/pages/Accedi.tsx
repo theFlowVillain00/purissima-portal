@@ -5,12 +5,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LogIn } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Accedi = () => {
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ username: "", password: "" });
+  const { login, user } = useAuth();
+  const navigate = useNavigate();
+
+  if (user) {
+    navigate("/dashboard", { replace: true });
+    return null;
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,8 +24,13 @@ const Accedi = () => {
       toast.error("Per favore compila tutti i campi");
       return;
     }
-    toast.success("Accesso effettuato con successo!");
-    setFormData({ username: "", password: "" });
+    const success = login(formData.username, formData.password);
+    if (success) {
+      toast.success("Accesso effettuato!");
+      navigate("/dashboard");
+    } else {
+      toast.error("Credenziali non valide");
+    }
   };
 
   return (
@@ -43,9 +54,7 @@ const Accedi = () => {
                 type="text"
                 placeholder="Il tuo nome utente"
                 value={formData.username}
-                onChange={(e) =>
-                  setFormData({ ...formData, username: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
               />
             </div>
             <div className="space-y-2">
@@ -55,14 +64,10 @@ const Accedi = () => {
                 type="password"
                 placeholder="La tua password"
                 value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               />
             </div>
-            <Button type="submit" className="w-full">
-              Accedi
-            </Button>
+            <Button type="submit" className="w-full">Accedi</Button>
           </form>
         </CardContent>
       </Card>
