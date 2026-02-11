@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ShoppingCart, Trash2, Send, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Product {
   id: string;
@@ -29,11 +28,7 @@ const products: Product[] = [
 ];
 
 const Ordini = () => {
-  const [formData, setFormData] = useState({
-    nomeAzienda: "",
-    nicknameMinecraft: "",
-    nicknameTelegram: "",
-  });
+  const { user } = useAuth();
   const [cart, setCart] = useState<CartItem[]>([]);
 
   const getQuantity = (id: string) => cart.find((i) => i.id === id)?.quantity || 0;
@@ -55,19 +50,13 @@ const Ordini = () => {
 
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.nomeAzienda || !formData.nicknameMinecraft || !formData.nicknameTelegram) {
-      toast.error("Per favore compila tutti i campi del modulo");
-      return;
-    }
+  const handleSubmit = () => {
     if (cart.length === 0) {
       toast.error("Il carrello è vuoto");
       return;
     }
     toast.success("Ordine inviato con successo! Ti contatteremo su Telegram.");
     setCart([]);
-    setFormData({ nomeAzienda: "", nicknameMinecraft: "", nicknameTelegram: "" });
   };
 
   return (
@@ -75,36 +64,12 @@ const Ordini = () => {
       <div className="mb-12 text-center">
         <h1 className="mb-4 font-serif text-4xl font-bold text-foreground">Ordini</h1>
         <p className="mx-auto max-w-2xl text-muted-foreground">
-          Compila il modulo e seleziona i prodotti che desideri acquistare.
+          Seleziona i prodotti che desideri acquistare.
         </p>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          {/* Form */}
-          <Card className="mb-8 border-border bg-card">
-            <CardHeader>
-              <CardTitle className="text-card-foreground">Informazioni Ordine</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form className="grid gap-4 sm:grid-cols-3">
-                <div className="space-y-2">
-                  <Label htmlFor="nomeAzienda">Nome Azienda</Label>
-                  <Input id="nomeAzienda" placeholder="La tua azienda" value={formData.nomeAzienda} onChange={(e) => setFormData({ ...formData, nomeAzienda: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="nicknameMinecraft">Nickname Minecraft</Label>
-                  <Input id="nicknameMinecraft" placeholder="Il tuo nickname" value={formData.nicknameMinecraft} onChange={(e) => setFormData({ ...formData, nicknameMinecraft: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="nicknameTelegram">Nickname Telegram</Label>
-                  <Input id="nicknameTelegram" placeholder="@username" value={formData.nicknameTelegram} onChange={(e) => setFormData({ ...formData, nicknameTelegram: e.target.value })} />
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-
-          {/* Products - structured like reference image */}
           <div>
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-xl font-bold text-foreground">
@@ -118,9 +83,7 @@ const Ordini = () => {
                 return (
                   <div
                     key={product.id}
-                    className={`flex items-center justify-between rounded-lg border p-4 transition-colors ${
-                      qty > 0 ? "border-primary bg-primary/5" : "border-border bg-card"
-                    }`}
+                    className="flex items-center justify-between rounded-lg border border-border bg-card p-4 transition-colors"
                   >
                     <div>
                       <p className="font-semibold text-card-foreground">{product.name}</p>
@@ -138,11 +101,7 @@ const Ordini = () => {
                       </span>
                       <button
                         onClick={() => updateQuantity(product, 1)}
-                        className={`flex h-9 w-9 items-center justify-center transition-colors ${
-                          qty > 0
-                            ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                            : "text-muted-foreground hover:bg-accent"
-                        }`}
+                        className="flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:bg-accent"
                       >
                         <Plus className="h-4 w-4" />
                       </button>
@@ -184,13 +143,6 @@ const Ordini = () => {
                       <span className="text-card-foreground">Totale:</span>
                       <span className="text-primary">€{totalPrice}</span>
                     </div>
-                    {formData.nomeAzienda && (
-                      <div className="mb-4 rounded-md bg-accent p-3 text-sm">
-                        <p className="text-muted-foreground"><strong>Azienda:</strong> {formData.nomeAzienda}</p>
-                        <p className="text-muted-foreground"><strong>MC:</strong> {formData.nicknameMinecraft || "-"}</p>
-                        <p className="text-muted-foreground"><strong>TG:</strong> {formData.nicknameTelegram || "-"}</p>
-                      </div>
-                    )}
                     <Button onClick={handleSubmit} className="w-full">
                       <Send className="mr-2 h-4 w-4" /> Invia Ordine
                     </Button>
