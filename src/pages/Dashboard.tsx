@@ -5,9 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
-import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import {
@@ -116,160 +113,87 @@ const Dashboard = () => {
         </Button>
       </div>
 
-      <Card className="border-border bg-card">
-        <CardHeader>
-          <CardTitle className="text-card-foreground">Ordini</CardTitle>
-        </CardHeader>
-        <CardContent className="overflow-x-auto">
-          {/* Desktop Table */}
-          <div className="hidden md:block">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Consegna</TableHead>
-                  <TableHead>Stato</TableHead>
-                  <TableHead className="text-right">Azioni</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {orders.map((order) => (
-                  <TableRow key={order.id_ordine}>
-                    <TableCell className="font-mono text-xs">{order.id_ordine}</TableCell>
-                    <TableCell>{order.data}</TableCell>
-                    <TableCell>{order.data_consegna || "-"}</TableCell>
-                    <TableCell>
-                      <Badge variant={statusColor(order.stato) as "default" | "secondary" | "outline"}>
-                        {order.stato}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="gap-1">
-                              <MoreHorizontal className="h-4 w-4" />
-                              <span className="text-xs">Dettagli</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem className="text-xs text-muted-foreground" disabled>
-                              Cliente: {order.cliente}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="text-xs text-muted-foreground" disabled>
-                              Contatto: {order.contatto}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="text-xs text-muted-foreground" disabled>
-                              Azienda: {order.azienda}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="text-xs text-muted-foreground" disabled>
-                              Dipendente: {order.dipendente || "-"}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="text-xs text-muted-foreground" disabled>
-                              Autore: {order.autore_consegna || "-"}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="text-xs text-muted-foreground" disabled>
-                              Preso da: {order.preso_in_carico_da || "-"}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="text-xs text-muted-foreground" disabled>
-                              DDT: {order.ddt_consegnato ? "✅" : "❌"}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-
-                        <Button
-                          variant="ghost" size="sm" className="gap-1"
-                          onClick={() => setEditingOrder({ ...order })}
-                        >
-                          <Pencil className="h-4 w-4" />
-                          <span className="text-xs">Modifica</span>
-                        </Button>
-
-                        {isAdmin && (
-                          <Button
-                            variant="ghost" size="sm" className="gap-1"
-                            onClick={() => handleDelete(order.id_ordine)}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                            <span className="text-xs">Elimina</span>
-                          </Button>
-                        )}
-
-                        <Button
-                          variant="ghost" size="sm" className="gap-1"
-                          onClick={() => { setNoteOrder(order); setNoteText(""); }}
-                        >
-                          <StickyNote className="h-4 w-4" />
-                          <span className="text-xs">Note</span>
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-
-          {/* Mobile Cards */}
-          <div className="flex flex-col gap-3 md:hidden">
-            {orders.map((order) => (
-              <div key={order.id_ordine} className="rounded-lg border border-border p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-mono text-xs font-bold text-foreground">{order.id_ordine}</p>
-                    <p className="text-xs text-muted-foreground">{order.data}</p>
-                  </div>
+      <div>
+        <h2 className="mb-4 text-xl font-semibold text-foreground">Ordini</h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {orders.map((order) => (
+            <Card key={order.id_ordine} className="border-border bg-card">
+              <CardContent className="p-4">
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="font-mono text-xs font-bold text-foreground">{order.id_ordine}</span>
                   <Badge variant={statusColor(order.stato) as "default" | "secondary" | "outline"}>
                     {order.stato}
                   </Badge>
                 </div>
 
-                <button
-                  onClick={() => setExpandedRow(expandedRow === order.id_ordine ? null : order.id_ordine)}
-                  className="mt-2 flex w-full items-center justify-center gap-1 text-xs text-muted-foreground"
-                >
-                  {expandedRow === order.id_ordine ? (
-                    <><ChevronUp className="h-3 w-3" /> Nascondi dettagli</>
-                  ) : (
-                    <><ChevronDown className="h-3 w-3" /> Mostra dettagli</>
-                  )}
-                </button>
+                <div className="space-y-1 text-xs text-muted-foreground">
+                  <p><strong>Data:</strong> {order.data}</p>
+                  <p><strong>Consegna:</strong> {order.data_consegna || "-"}</p>
+                  <p><strong>Preso in carico da:</strong> {order.preso_in_carico_da || "-"}</p>
+                  <p><strong>In lavorazione da:</strong> {order.dipendente || "-"}</p>
+                </div>
 
-                {expandedRow === order.id_ordine && (
-                  <div className="mt-3 space-y-1 border-t border-border pt-3 text-xs text-muted-foreground">
-                    <p><strong>Cliente:</strong> {order.cliente}</p>
-                    <p><strong>Contatto:</strong> {order.contatto}</p>
-                    <p><strong>Azienda:</strong> {order.azienda}</p>
-                    <p><strong>Dipendente:</strong> {order.dipendente || "-"}</p>
-                    <p><strong>Consegna:</strong> {order.data_consegna || "-"}</p>
-                    <p><strong>Autore:</strong> {order.autore_consegna || "-"}</p>
-                    <p><strong>Preso da:</strong> {order.preso_in_carico_da || "-"}</p>
-                    <p><strong>DDT:</strong> {order.ddt_consegnato ? "✅" : "❌"}</p>
-                  </div>
-                )}
-
-                <div className="mt-3 flex items-center justify-end gap-1 border-t border-border pt-3">
-                  <Button variant="ghost" size="sm" className="gap-1" onClick={() => setEditingOrder({ ...order })}>
-                    <Pencil className="h-4 w-4" />
-                    <span className="text-xs">Modifica</span>
+                <div className="mt-3 flex items-center justify-end gap-2 border-t border-border pt-3">
+                  <Button
+                    variant="ghost" size="sm"
+                    className="flex h-auto flex-col items-center gap-0.5 px-2 py-1"
+                    onClick={() => { setNoteOrder(order); setNoteText(""); }}
+                  >
+                    <StickyNote className="h-3.5 w-3.5" />
+                    <span className="text-[10px]">Note</span>
                   </Button>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="flex h-auto flex-col items-center gap-0.5 px-2 py-1">
+                        <MoreHorizontal className="h-3.5 w-3.5" />
+                        <span className="text-[10px]">Dettagli</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem className="text-xs text-muted-foreground" disabled>
+                        Cliente: {order.cliente}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="text-xs text-muted-foreground" disabled>
+                        Contatto: {order.contatto}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="text-xs text-muted-foreground" disabled>
+                        Azienda: {order.azienda}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="text-xs text-muted-foreground" disabled>
+                        Autore: {order.autore_consegna || "-"}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="text-xs text-muted-foreground" disabled>
+                        DDT: {order.ddt_consegnato ? "✅" : "❌"}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  <Button
+                    variant="ghost" size="sm"
+                    className="flex h-auto flex-col items-center gap-0.5 px-2 py-1"
+                    onClick={() => setEditingOrder({ ...order })}
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                    <span className="text-[10px]">Modifica</span>
+                  </Button>
+
                   {isAdmin && (
-                    <Button variant="ghost" size="sm" className="gap-1" onClick={() => handleDelete(order.id_ordine)}>
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                      <span className="text-xs">Elimina</span>
+                    <Button
+                      variant="ghost" size="sm"
+                      className="flex h-auto flex-col items-center gap-0.5 px-2 py-1"
+                      onClick={() => handleDelete(order.id_ordine)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                      <span className="text-[10px]">Elimina</span>
                     </Button>
                   )}
-                  <Button variant="ghost" size="sm" className="gap-1" onClick={() => { setNoteOrder(order); setNoteText(""); }}>
-                    <StickyNote className="h-4 w-4" />
-                    <span className="text-xs">Note</span>
-                  </Button>
                 </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
 
       {/* Edit Dialog */}
       <Dialog open={!!editingOrder} onOpenChange={(open) => !open && setEditingOrder(null)}>
