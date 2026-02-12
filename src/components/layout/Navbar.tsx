@@ -14,9 +14,7 @@ const Navbar = () => {
     { name: "Staff", path: "/staff" },
   ];
 
-  const navLinks = user
-    ? [...publicLinks, { name: "Ordini", path: "/ordini" }]
-    : publicLinks;
+  const navLinks = publicLinks;
 
   const isActive = (path: string) => location.pathname === path;
 

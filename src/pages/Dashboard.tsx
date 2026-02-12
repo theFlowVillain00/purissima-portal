@@ -148,8 +148,9 @@ const Dashboard = () => {
                       <div className="flex items-center justify-end gap-1">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
+                            <Button variant="ghost" size="sm" className="gap-1">
                               <MoreHorizontal className="h-4 w-4" />
+                              <span className="text-xs">Dettagli</span>
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
@@ -178,26 +179,29 @@ const Dashboard = () => {
                         </DropdownMenu>
 
                         <Button
-                          variant="ghost" size="icon"
+                          variant="ghost" size="sm" className="gap-1"
                           onClick={() => setEditingOrder({ ...order })}
                         >
                           <Pencil className="h-4 w-4" />
+                          <span className="text-xs">Modifica</span>
                         </Button>
 
                         {isAdmin && (
                           <Button
-                            variant="ghost" size="icon"
+                            variant="ghost" size="sm" className="gap-1"
                             onClick={() => handleDelete(order.id_ordine)}
                           >
                             <Trash2 className="h-4 w-4 text-destructive" />
+                            <span className="text-xs">Elimina</span>
                           </Button>
                         )}
 
                         <Button
-                          variant="ghost" size="icon"
+                          variant="ghost" size="sm" className="gap-1"
                           onClick={() => { setNoteOrder(order); setNoteText(""); }}
                         >
                           <StickyNote className="h-4 w-4" />
+                          <span className="text-xs">Note</span>
                         </Button>
                       </div>
                     </TableCell>
@@ -246,16 +250,19 @@ const Dashboard = () => {
                 )}
 
                 <div className="mt-3 flex items-center justify-end gap-1 border-t border-border pt-3">
-                  <Button variant="ghost" size="icon" onClick={() => setEditingOrder({ ...order })}>
+                  <Button variant="ghost" size="sm" className="gap-1" onClick={() => setEditingOrder({ ...order })}>
                     <Pencil className="h-4 w-4" />
+                    <span className="text-xs">Modifica</span>
                   </Button>
                   {isAdmin && (
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(order.id_ordine)}>
+                    <Button variant="ghost" size="sm" className="gap-1" onClick={() => handleDelete(order.id_ordine)}>
                       <Trash2 className="h-4 w-4 text-destructive" />
+                      <span className="text-xs">Elimina</span>
                     </Button>
                   )}
-                  <Button variant="ghost" size="icon" onClick={() => { setNoteOrder(order); setNoteText(""); }}>
+                  <Button variant="ghost" size="sm" className="gap-1" onClick={() => { setNoteOrder(order); setNoteText(""); }}>
                     <StickyNote className="h-4 w-4" />
+                    <span className="text-xs">Note</span>
                   </Button>
                 </div>
               </div>
