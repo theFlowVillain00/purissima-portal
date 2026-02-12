@@ -9,11 +9,14 @@ const Navbar = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
 
-  const navLinks = [
+  const publicLinks = [
     { name: "Home", path: "/" },
     { name: "Staff", path: "/staff" },
-    { name: "Ordini", path: "/ordini" },
   ];
+
+  const navLinks = user
+    ? [...publicLinks, { name: "Ordini", path: "/ordini" }]
+    : publicLinks;
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -41,7 +44,7 @@ const Navbar = () => {
             <div className="flex items-center gap-2">
               {user ? (
                 <>
-                  <Button variant="ghost" asChild>
+                  <Button asChild>
                     <Link to="/dashboard">Dashboard</Link>
                   </Button>
                   <Button variant="outline" size="sm" onClick={logout}>
@@ -79,7 +82,7 @@ const Navbar = () => {
               <div className="mt-2 px-4">
                 {user ? (
                   <div className="flex flex-col gap-2">
-                    <Button asChild variant="ghost" className="w-full">
+                    <Button asChild className="w-full">
                       <Link to="/dashboard" onClick={() => setIsOpen(false)}>Dashboard</Link>
                     </Button>
                     <Button variant="outline" className="w-full" onClick={() => { logout(); setIsOpen(false); }}>
