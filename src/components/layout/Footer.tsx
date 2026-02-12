@@ -5,20 +5,20 @@ const Footer = () => {
   const coordinates = {
     x: 1024,
     y: 64,
-    z: -512,
+    z: -512
   };
 
   const footerLinks = [
-    { name: "Home", path: "/" },
-    { name: "Staff", path: "/staff" },
-    { name: "Ordini", path: "/ordini" },
-    { name: "Accedi", path: "/accedi" },
-  ];
+  { name: "Home", path: "/" },
+  { name: "Staff", path: "/staff" },
+  { name: "Ordini", path: "/ordini" },
+  { name: "Accedi", path: "/accedi" }];
+
 
   return (
     <footer className="border-t border-border bg-secondary">
       <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
+        <div className="flex-col gap-8 md:items-start md:justify-between px-[10px] flex md:flex-row">
           {/* Disclaimer Section */}
           <div className="max-w-md">
             <div className="mb-3 flex items-center gap-2">
@@ -40,15 +40,15 @@ const Footer = () => {
             <span className="mb-2 text-sm font-semibold text-secondary-foreground">
               Link Utili
             </span>
-            {footerLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className="text-sm text-secondary-foreground/80 transition-colors hover:text-primary"
-              >
+            {footerLinks.map((link) =>
+            <Link
+              key={link.path}
+              to={link.path}
+              className="text-sm text-secondary-foreground/80 transition-colors hover:text-primary">
+
                 {link.name}
               </Link>
-            ))}
+            )}
           </div>
         </div>
 
@@ -58,8 +58,8 @@ const Footer = () => {
           </p>
         </div>
       </div>
-    </footer>
-  );
+    </footer>);
+
 };
 
 export default Footer;
