@@ -26,7 +26,7 @@ const Navbar = () => {
             <span className="text-xl font-bold text-foreground">Purissima™</span>
           </Link>
 
-          <div className="hidden items-center gap-8 md:flex">
+          <div className="hidden items-center gap-6 md:flex">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
@@ -38,23 +38,22 @@ const Navbar = () => {
                 {link.name}
               </Link>
             ))}
-          </div>
-
-          <div className="hidden items-center gap-2 md:flex">
-            {user ? (
-              <>
-                <Button variant="ghost" asChild>
-                  <Link to="/dashboard">Dashboard</Link>
+            <div className="flex items-center gap-2">
+              {user ? (
+                <>
+                  <Button variant="ghost" asChild>
+                    <Link to="/dashboard">Dashboard</Link>
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={logout}>
+                    <LogOut className="mr-1 h-4 w-4" /> Esci
+                  </Button>
+                </>
+              ) : (
+                <Button asChild>
+                  <Link to="/accedi">Accedi</Link>
                 </Button>
-                <Button variant="outline" size="sm" onClick={logout}>
-                  <LogOut className="mr-1 h-4 w-4" /> Esci
-                </Button>
-              </>
-            ) : (
-              <Button asChild>
-                <Link to="/accedi">Accedi</Link>
-              </Button>
-            )}
+              )}
+            </div>
           </div>
 
           <button className="md:hidden" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">

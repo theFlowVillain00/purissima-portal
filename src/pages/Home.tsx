@@ -11,8 +11,8 @@ const Home = () => {
 
   return (
     <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="relative min-h-[70vh] w-full overflow-hidden">
+      {/* Hero Section with Opening Hours overlay */}
+      <section className="relative min-h-[calc(100vh-4rem)] w-full overflow-hidden">
         <img
           src={heroBg}
           alt="Purissima landscape"
@@ -20,21 +20,18 @@ const Home = () => {
         />
         <div className="absolute inset-0 bg-secondary/60" />
         
-        <div className="container relative mx-auto flex min-h-[70vh] flex-col items-center justify-center px-4 text-center">
-          <h1 className="mb-4 font-serif text-4xl font-bold text-secondary-foreground md:text-6xl">
-            Benvenuti su Purissima™
-          </h1>
-          <p className="max-w-2xl text-lg text-secondary-foreground/90 md:text-xl">
-            La migliore destinazione per prodotti artigianali di alta qualità nel mondo Minecraft. 
-            Ordina oggi e ricevi i tuoi oggetti direttamente nella tua base!
-          </p>
-        </div>
-      </section>
+        <div className="container relative mx-auto flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-8 px-4 py-12 text-center">
+          <div>
+            <h1 className="mb-4 font-serif text-4xl font-bold text-secondary-foreground md:text-6xl">
+              Benvenuti su Purissima™
+            </h1>
+            <p className="mx-auto max-w-2xl text-lg text-secondary-foreground/90 md:text-xl">
+              La migliore destinazione per prodotti artigianali di alta qualità nel mondo Minecraft. 
+              Ordina oggi e ricevi i tuoi oggetti direttamente nella tua base!
+            </p>
+          </div>
 
-      {/* Opening Hours Section */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="flex flex-col items-center">
-          <Card className="w-full max-w-md border-border bg-card shadow-lg">
+          <Card className="w-full max-w-md border-border bg-card/90 shadow-lg backdrop-blur">
             <CardContent className="p-6">
               <div className="mb-4 flex items-center justify-center gap-2">
                 <Clock className="h-6 w-6 text-primary" />
