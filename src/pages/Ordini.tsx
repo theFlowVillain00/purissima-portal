@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Trash2, Send, Minus, Plus } from "lucide-react";
@@ -29,7 +30,13 @@ const products: Product[] = [
 
 const Ordini = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [cart, setCart] = useState<CartItem[]>([]);
+
+  if (!user) {
+    navigate("/accedi", { replace: true });
+    return null;
+  }
 
   const getQuantity = (id: string) => cart.find((i) => i.id === id)?.quantity || 0;
 
@@ -92,7 +99,7 @@ const Ordini = () => {
                     <div className="flex items-center gap-0 rounded-md border border-border overflow-hidden">
                       <button
                         onClick={() => updateQuantity(product, -1)}
-                        className="flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:bg-accent"
+                        className="flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
                       >
                         <Minus className="h-4 w-4" />
                       </button>
@@ -101,7 +108,7 @@ const Ordini = () => {
                       </span>
                       <button
                         onClick={() => updateQuantity(product, 1)}
-                        className="flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:bg-accent"
+                        className="flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
                       >
                         <Plus className="h-4 w-4" />
                       </button>
