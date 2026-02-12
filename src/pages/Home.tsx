@@ -31,20 +31,20 @@ const Home = () => {
             </p>
           </div>
 
-          <Card className="w-full max-w-md border-border bg-card/90 shadow-lg backdrop-blur">
-            <CardContent className="p-6">
-              <div className="mb-4 flex items-center justify-center gap-2">
-                <Clock className="h-6 w-6 text-primary" />
-                <h2 className="text-xl font-bold text-card-foreground">Orari di Apertura</h2>
+          <Card className="w-full max-w-xs border-none bg-background/20 shadow-lg backdrop-blur-md">
+            <CardContent className="p-4">
+              <div className="mb-3 flex items-center justify-center gap-2">
+                <Clock className="h-5 w-5 text-secondary-foreground" />
+                <h2 className="text-base font-bold text-secondary-foreground">Orari di Apertura</h2>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {openingHours.map((item, index) => (
                   <div
                     key={index}
-                    className="flex justify-between border-b border-border pb-2 last:border-0 last:pb-0"
+                    className="flex justify-between border-b border-secondary-foreground/20 pb-2 last:border-0 last:pb-0"
                   >
-                    <span className="font-medium text-card-foreground">{item.day}</span>
-                    <span className="text-muted-foreground">{item.hours}</span>
+                    <span className="text-sm font-medium text-secondary-foreground">{item.day}</span>
+                    <span className="text-sm text-secondary-foreground/70">{item.hours}</span>
                   </div>
                 ))}
               </div>
