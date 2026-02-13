@@ -10,48 +10,43 @@ const Home = () => {
   ];
 
   return (
-    <div className="h-full">
-      {/* Hero Section with Opening Hours overlay */}
-      <section className="relative h-full w-full overflow-hidden">
-        <img
-          src={heroBg}
-          alt="Purissima landscape"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-secondary/60" />
-        
-        <div className="container relative mx-auto flex h-full flex-col items-center justify-center gap-8 px-4 py-12 text-center">
-          <div>
-            <h1 className="mb-4 font-serif text-4xl font-bold text-secondary-foreground md:text-6xl">
-              Benvenuti su Purissima™
-            </h1>
-            <p className="mx-auto max-w-2xl text-lg text-secondary-foreground/90 md:text-xl">
-              La migliore destinazione per prodotti artigianali di alta qualità nel mondo Minecraft. 
-              Ordina oggi e ricevi i tuoi oggetti direttamente nella tua base!
-            </p>
-          </div>
+    <div
+      className="flex h-full items-center justify-center bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: `url(${heroBg})` }}
+    >
+      <div className="absolute inset-0 bg-secondary/60" />
 
-          <Card className="w-full max-w-xs border-none bg-background/20 shadow-lg backdrop-blur-md">
-            <CardContent className="p-4">
-              <div className="mb-3 flex items-center justify-center gap-2">
-                <Clock className="h-5 w-5 text-secondary-foreground" />
-                <h2 className="text-base font-bold text-secondary-foreground">Orari di Apertura</h2>
-              </div>
-              <div className="space-y-2">
-                {openingHours.map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between border-b border-secondary-foreground/20 pb-2 last:border-0 last:pb-0"
-                  >
-                    <span className="text-sm font-medium text-secondary-foreground">{item.day}</span>
-                    <span className="text-sm text-secondary-foreground/70">{item.hours}</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+      <div className="relative z-10 flex flex-col items-center gap-8 px-4 text-center">
+        <div>
+          <h1 className="mb-4 font-serif text-4xl font-bold text-secondary-foreground md:text-6xl">
+            Benvenuti su Purissima™
+          </h1>
+          <p className="mx-auto max-w-2xl text-lg text-secondary-foreground/90 md:text-xl">
+            La migliore destinazione per prodotti artigianali di alta qualità nel mondo Minecraft. 
+            Ordina oggi e ricevi i tuoi oggetti direttamente nella tua base!
+          </p>
         </div>
-      </section>
+
+        <Card className="w-full max-w-xs border-none bg-background/20 shadow-lg backdrop-blur-md">
+          <CardContent className="p-4">
+            <div className="mb-3 flex items-center justify-center gap-2">
+              <Clock className="h-5 w-5 text-secondary-foreground" />
+              <h2 className="text-base font-bold text-secondary-foreground">Orari di Apertura</h2>
+            </div>
+            <div className="space-y-2">
+              {openingHours.map((item, index) => (
+                <div
+                  key={index}
+                  className="flex justify-between border-b border-secondary-foreground/20 pb-2 last:border-0 last:pb-0"
+                >
+                  <span className="text-sm font-medium text-secondary-foreground">{item.day}</span>
+                  <span className="text-sm text-secondary-foreground/70">{item.hours}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
