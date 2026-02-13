@@ -11,9 +11,40 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate, useNavigate } from "react-router-dom";
-import { Pencil, Trash2, StickyNote, MoreHorizontal, ExternalLink, LayoutGrid, List } from "lucide-react";
+import { Pencil, Trash2, StickyNote, MoreHorizontal, ExternalLink, LayoutGrid, List, ArrowUpDown } from "lucide-react";
 import { toast } from "sonner";
 import { getOrders, saveOrders, type Order } from "@/lib/orderStore";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
+
+type SortOption = "id_desc" | "id_asc" | "stato" | "data_desc" | "data_asc" | "cliente" | "dipendente" | "preso_in_carico_da";
+
+const sortLabels: Record<SortOption, string> = {
+  id_desc: "ID (più recente)",
+  id_asc: "ID (meno recente)",
+  stato: "Stato",
+  data_desc: "Data (più recente)",
+  data_asc: "Data (meno recente)",
+  cliente: "Cliente",
+  dipendente: "Lavorazione",
+  preso_in_carico_da: "Preso in carico da",
+};
+
+const sortOrders = (orders: Order[], sort: SortOption): Order[] => {
+  const sorted = [...orders];
+  switch (sort) {
+    case "id_desc": return sorted.sort((a, b) => b.id_ordine.localeCompare(a.id_ordine));
+    case "id_asc": return sorted.sort((a, b) => a.id_ordine.localeCompare(b.id_ordine));
+    case "stato": return sorted.sort((a, b) => a.stato.localeCompare(b.stato));
+    case "data_desc": return sorted.sort((a, b) => b.data.localeCompare(a.data));
+    case "data_asc": return sorted.sort((a, b) => a.data.localeCompare(b.data));
+    case "cliente": return sorted.sort((a, b) => a.cliente.localeCompare(b.cliente));
+    case "dipendente": return sorted.sort((a, b) => (a.dipendente || "").localeCompare(b.dipendente || ""));
+    case "preso_in_carico_da": return sorted.sort((a, b) => (a.preso_in_carico_da || "").localeCompare(b.preso_in_carico_da || ""));
+    default: return sorted;
+  }
+};
 
 const statusColor = (stato: string) => {
   switch (stato) {
@@ -134,6 +165,9 @@ const Dashboard = () => {
   const [noteText, setNoteText] = useState("");
   const [viewMode, setViewMode] = useState<string>("cards");
   const [detailOrder, setDetailOrder] = useState<Order | null>(null);
+  const [sortBy, setSortBy] = useState<SortOption>("id_desc");
+
+  const sortedOrders = sortOrders(orders, sortBy);
 
   if (!user) return <Navigate to="/accedi" replace />;
 
@@ -194,31 +228,44 @@ const Dashboard = () => {
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col">
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-xl font-semibold text-foreground">Ordini</h2>
-          <Tabs value={viewMode} onValueChange={setViewMode}>
-            <TabsList className="h-8">
-              <TabsTrigger value="cards" className="h-6 px-2">
-                <LayoutGrid className="mr-1 h-3.5 w-3.5" />
-                <span className="text-xs">Card</span>
-              </TabsTrigger>
-              <TabsTrigger value="compact" className="h-6 px-2">
-                <List className="mr-1 h-3.5 w-3.5" />
-                <span className="text-xs">Compatta</span>
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="flex items-center gap-2">
+            <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
+              <SelectTrigger className="h-8 w-[180px] text-xs">
+                <ArrowUpDown className="mr-1 h-3.5 w-3.5" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(sortLabels).map(([key, label]) => (
+                  <SelectItem key={key} value={key} className="text-xs">{label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Tabs value={viewMode} onValueChange={setViewMode}>
+              <TabsList className="h-8">
+                <TabsTrigger value="cards" className="h-6 px-2">
+                  <LayoutGrid className="mr-1 h-3.5 w-3.5" />
+                  <span className="text-xs">Card</span>
+                </TabsTrigger>
+                <TabsTrigger value="compact" className="h-6 px-2">
+                  <List className="mr-1 h-3.5 w-3.5" />
+                  <span className="text-xs">Compatta</span>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
         </div>
 
         {viewMode === "cards" ? (
           <div className="grid gap-4 overflow-auto sm:grid-cols-2 lg:grid-cols-3">
-            {orders.map((order) => (
+            {sortedOrders.map((order) => (
               <OrderCardView key={order.id_ordine} {...actionProps(order)} />
             ))}
           </div>
         ) : (
           <div className="flex flex-col gap-2 overflow-auto">
-            {orders.map((order) => (
+            {sortedOrders.map((order) => (
               <OrderCompactView key={order.id_ordine} {...actionProps(order)} />
             ))}
           </div>
