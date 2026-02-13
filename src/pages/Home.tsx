@@ -12,7 +12,7 @@ const Home = () => {
   return (
     <div className="flex flex-col">
       {/* Hero Section with Opening Hours overlay */}
-      <section className="relative min-h-[calc(100vh-8rem)] w-full overflow-hidden">
+      <section className="relative h-[calc(100vh-4rem)] w-full overflow-hidden">
         <img
           src={heroBg}
           alt="Purissima landscape"
@@ -20,7 +20,7 @@ const Home = () => {
         />
         <div className="absolute inset-0 bg-secondary/60" />
         
-        <div className="container relative mx-auto flex min-h-[calc(100vh-8rem)] flex-col items-center justify-center gap-8 px-4 py-12 text-center">
+        <div className="container relative mx-auto flex h-full flex-col items-center justify-center gap-8 px-4 py-12 text-center">
           <div>
             <h1 className="mb-4 font-serif text-4xl font-bold text-secondary-foreground md:text-6xl">
               Benvenuti su Purissima™
