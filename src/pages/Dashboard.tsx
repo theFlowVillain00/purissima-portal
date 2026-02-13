@@ -13,41 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Pencil, Trash2, StickyNote, MoreHorizontal, ExternalLink, LayoutGrid, List } from "lucide-react";
 import { toast } from "sonner";
-
-interface Order {
-  id_ordine: string;
-  cliente: string;
-  contatto: string;
-  azienda: string;
-  data: string;
-  dipendente: string;
-  data_consegna: string;
-  autore_consegna: string;
-  preso_in_carico_da: string;
-  stato: string;
-  ddt_consegnato: boolean;
-  note: string;
-  nickname_minecraft: string;
-  nickname_telegram: string;
-  prodotti: { name: string; quantity: number; price: number }[];
-}
-
-const initialOrders: Order[] = [
-  {
-    id_ordine: "ORD-001", cliente: "Steve", contatto: "@steve_tg", azienda: "DiamondCorp",
-    data: "2026-02-01", dipendente: "", data_consegna: "", autore_consegna: "",
-    preso_in_carico_da: "", stato: "In attesa", ddt_consegnato: false, note: "",
-    nickname_minecraft: "Steve", nickname_telegram: "@steve_tg",
-    prodotti: [{ name: "Diamanti x64", quantity: 2, price: 500 }],
-  },
-  {
-    id_ordine: "ORD-002", cliente: "Alex", contatto: "@alex_tg", azienda: "NetheriteInc",
-    data: "2026-02-03", dipendente: "Marco", data_consegna: "2026-02-10", autore_consegna: "Luca",
-    preso_in_carico_da: "Admin", stato: "Completato", ddt_consegnato: true, note: "Consegnato in tempo",
-    nickname_minecraft: "Alex", nickname_telegram: "@alex_tg",
-    prodotti: [{ name: "Netherite Ingot x16", quantity: 1, price: 800 }],
-  },
-];
+import { getOrders, saveOrders, type Order } from "@/lib/orderStore";
 
 const statusColor = (stato: string) => {
   switch (stato) {
@@ -162,7 +128,7 @@ const OrderCompactView = ({ order, isAdmin, onNote, onEdit, onDelete, onDetails 
 const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [orders, setOrders] = useState<Order[]>(initialOrders);
+  const [orders, setOrders] = useState<Order[]>(() => getOrders());
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [noteOrder, setNoteOrder] = useState<Order | null>(null);
   const [noteText, setNoteText] = useState("");
@@ -175,25 +141,35 @@ const Dashboard = () => {
 
   const handleUpdate = () => {
     if (!editingOrder) return;
-    setOrders((prev) => prev.map((o) => (o.id_ordine === editingOrder.id_ordine ? editingOrder : o)));
+    setOrders((prev) => {
+      const updated = prev.map((o) => (o.id_ordine === editingOrder.id_ordine ? editingOrder : o));
+      saveOrders(updated);
+      return updated;
+    });
     setEditingOrder(null);
     toast.success("Ordine aggiornato!");
   };
 
   const handleDelete = (id: string) => {
-    setOrders((prev) => prev.filter((o) => o.id_ordine !== id));
+    setOrders((prev) => {
+      const updated = prev.filter((o) => o.id_ordine !== id);
+      saveOrders(updated);
+      return updated;
+    });
     toast.success("Ordine eliminato!");
   };
 
   const handleAddNote = () => {
     if (!noteOrder || !noteText.trim()) return;
-    setOrders((prev) =>
-      prev.map((o) =>
+    setOrders((prev) => {
+      const updated = prev.map((o) =>
         o.id_ordine === noteOrder.id_ordine
           ? { ...o, note: o.note ? `${o.note}\n${noteText}` : noteText }
           : o
-      )
-    );
+      );
+      saveOrders(updated);
+      return updated;
+    });
     setNoteOrder(null);
     setNoteText("");
     toast.success("Nota aggiunta!");
