@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Trash2, Send, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { addOrder, generateOrderId } from "@/lib/orderStore";
 
 interface Product {
   id: string;
@@ -62,6 +63,24 @@ const Ordini = () => {
       toast.error("Il carrello è vuoto");
       return;
     }
+    const newOrder = {
+      id_ordine: generateOrderId(),
+      cliente: user.username,
+      contatto: "",
+      azienda: "",
+      data: new Date().toISOString().split("T")[0],
+      dipendente: "",
+      data_consegna: "",
+      autore_consegna: "",
+      preso_in_carico_da: "",
+      stato: "In attesa",
+      ddt_consegnato: false,
+      note: "",
+      nickname_minecraft: user.username,
+      nickname_telegram: "",
+      prodotti: cart.map((item) => ({ name: item.name, quantity: item.quantity, price: item.price })),
+    };
+    addOrder(newOrder);
     toast.success("Ordine inviato con successo! Ti contatteremo su Telegram.");
     setCart([]);
   };
