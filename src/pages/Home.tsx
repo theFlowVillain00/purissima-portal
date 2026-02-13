@@ -10,9 +10,9 @@ const Home = () => {
   ];
 
   return (
-    <div className="h-full">
+    <div className="flex flex-col">
       {/* Hero Section with Opening Hours overlay */}
-      <section className="relative h-full w-full overflow-hidden">
+      <section className="relative h-[calc(100vh-4rem)] w-full overflow-hidden">
         <img
           src={heroBg}
           alt="Purissima landscape"

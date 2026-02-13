@@ -34,7 +34,7 @@ const Accedi = () => {
   };
 
   return (
-    <div className="container mx-auto flex h-full items-center justify-center px-4 py-16">
+    <div className="container mx-auto flex min-h-[70vh] items-center justify-center px-4 py-16">
       <Card className="w-full max-w-md border-border bg-card">
         <CardHeader className="text-center">
           <CardTitle className="flex items-center justify-center gap-2 text-2xl text-card-foreground">

@@ -209,7 +209,7 @@ const Dashboard = () => {
   });
 
   return (
-    <div className="container mx-auto flex h-full flex-col px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold text-foreground sm:text-3xl">Ciao, {user.username}</h1>
         <Button onClick={() => navigate("/ordini")}>
@@ -217,7 +217,7 @@ const Dashboard = () => {
         </Button>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col">
+      <div>
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-foreground">Ordini</h2>
           <Tabs value={viewMode} onValueChange={setViewMode}>
@@ -235,13 +235,13 @@ const Dashboard = () => {
         </div>
 
         {viewMode === "cards" ? (
-          <div className="grid gap-4 overflow-auto sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {orders.map((order) => (
               <OrderCardView key={order.id_ordine} {...actionProps(order)} />
             ))}
           </div>
         ) : (
-          <div className="flex flex-col gap-2 overflow-auto">
+          <div className="flex flex-col gap-2">
             {orders.map((order) => (
               <OrderCompactView key={order.id_ordine} {...actionProps(order)} />
             ))}
