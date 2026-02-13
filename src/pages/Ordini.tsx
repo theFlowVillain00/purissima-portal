@@ -67,7 +67,7 @@ const Ordini = () => {
   };
 
   return (
-    <div className="container mx-auto min-h-[calc(100vh-5rem)] px-4 py-6">
+    <div className="container mx-auto px-4 py-6">
       <div className="mb-4 text-center">
         <h1 className="mb-1 font-serif text-2xl font-bold text-foreground">Ordini</h1>
         <p className="text-sm text-muted-foreground">

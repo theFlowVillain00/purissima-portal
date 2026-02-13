@@ -7,9 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
@@ -69,38 +66,24 @@ interface OrderActionsProps {
   onNote: (order: Order) => void;
   onEdit: (order: Order) => void;
   onDelete: (id: string) => void;
+  onDetails: (order: Order) => void;
 }
 
-const OrderActions = ({ order, isAdmin, onNote, onEdit, onDelete }: OrderActionsProps) => (
+const OrderActions = ({ order, isAdmin, onNote, onEdit, onDelete }: Omit<OrderActionsProps, 'onDetails'>) => (
   <div className="flex items-center gap-2">
     <Button variant="ghost" size="sm" className="flex h-auto flex-col items-center gap-0.5 px-2 py-1"
-      onClick={() => onNote(order)}>
+      onClick={(e) => { e.stopPropagation(); onNote(order); }}>
       <StickyNote className="h-3.5 w-3.5" />
       <span className="text-[10px]">Note</span>
     </Button>
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="flex h-auto flex-col items-center gap-0.5 px-2 py-1">
-          <MoreHorizontal className="h-3.5 w-3.5" />
-          <span className="text-[10px]">Dettagli</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem className="text-xs text-muted-foreground" disabled>Cliente: {order.cliente}</DropdownMenuItem>
-        <DropdownMenuItem className="text-xs text-muted-foreground" disabled>Contatto: {order.contatto}</DropdownMenuItem>
-        <DropdownMenuItem className="text-xs text-muted-foreground" disabled>Azienda: {order.azienda}</DropdownMenuItem>
-        <DropdownMenuItem className="text-xs text-muted-foreground" disabled>Autore: {order.autore_consegna || "-"}</DropdownMenuItem>
-        <DropdownMenuItem className="text-xs text-muted-foreground" disabled>DDT: {order.ddt_consegnato ? "✅" : "❌"}</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
     <Button variant="ghost" size="sm" className="flex h-auto flex-col items-center gap-0.5 px-2 py-1"
-      onClick={() => onEdit(order)}>
+      onClick={(e) => { e.stopPropagation(); onEdit(order); }}>
       <Pencil className="h-3.5 w-3.5" />
       <span className="text-[10px]">Modifica</span>
     </Button>
     {isAdmin && (
       <Button variant="ghost" size="sm" className="flex h-auto flex-col items-center gap-0.5 px-2 py-1"
-        onClick={() => onDelete(order.id_ordine)}>
+        onClick={(e) => { e.stopPropagation(); onDelete(order.id_ordine); }}>
         <Trash2 className="h-3.5 w-3.5 text-destructive" />
         <span className="text-[10px]">Elimina</span>
       </Button>
@@ -108,8 +91,8 @@ const OrderActions = ({ order, isAdmin, onNote, onEdit, onDelete }: OrderActions
   </div>
 );
 
-const OrderCardView = ({ order, isAdmin, onNote, onEdit, onDelete }: OrderActionsProps) => (
-  <Card className="border-border bg-card">
+const OrderCardView = ({ order, isAdmin, onNote, onEdit, onDelete, onDetails }: OrderActionsProps) => (
+  <Card className="cursor-pointer border-border bg-card transition-colors hover:bg-accent/30" onClick={() => onDetails(order)}>
     <CardContent className="p-4">
       <div className="mb-3 flex items-center justify-between">
         <span className="font-mono text-xs font-bold text-foreground">{order.id_ordine}</span>
@@ -119,47 +102,52 @@ const OrderCardView = ({ order, isAdmin, onNote, onEdit, onDelete }: OrderAction
         <p><strong>Data:</strong> {order.data}</p>
         <p><strong>Consegna:</strong> {order.data_consegna || "-"}</p>
         <p><strong>Preso in carico da:</strong> {order.preso_in_carico_da || "-"}</p>
-        <p><strong>In lavorazione da:</strong> {order.dipendente || "-"}</p>
+        <p><strong>Lavorazione:</strong> {order.dipendente || "-"}</p>
       </div>
-      <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
-        <img
-          src={`https://mc-heads.net/avatar/${order.nickname_minecraft || order.cliente}/32`}
-          alt={order.cliente}
-          className="h-8 w-8 rounded"
-        />
-        <OrderActions order={order} isAdmin={isAdmin} onNote={onNote} onEdit={onEdit} onDelete={onDelete} />
+      <div className="mt-3 flex items-center justify-center border-t border-border pt-3">
+        <div className="flex items-center gap-3">
+          <img
+            src={`https://mc-heads.net/avatar/${order.nickname_minecraft || order.cliente}/32`}
+            alt={order.cliente}
+            className="h-8 w-8 rounded"
+          />
+          <OrderActions order={order} isAdmin={isAdmin} onNote={onNote} onEdit={onEdit} onDelete={onDelete} />
+        </div>
       </div>
     </CardContent>
   </Card>
 );
 
-const OrderCompactView = ({ order, isAdmin, onNote, onEdit, onDelete }: OrderActionsProps) => (
-  <Card className="border-border bg-card">
+const OrderCompactView = ({ order, isAdmin, onNote, onEdit, onDelete, onDetails }: OrderActionsProps) => (
+  <Card className="cursor-pointer border-border bg-card transition-colors hover:bg-accent/30" onClick={() => onDetails(order)}>
     <CardContent className="flex items-center justify-between gap-3 p-3">
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <span className="shrink-0 font-mono text-xs font-bold text-foreground">{order.id_ordine}</span>
-        <span className="hidden text-xs text-muted-foreground sm:inline">
+        <span className="text-xs text-muted-foreground">
           <span className="hidden text-muted-foreground/60 md:inline">Data: </span>{order.data}
         </span>
-        <Badge variant={statusColor(order.stato) as "default" | "secondary" | "outline"} className="shrink-0 text-[10px]">
-          {order.stato}
-        </Badge>
+        <span className="hidden truncate text-xs text-muted-foreground md:inline">
+          <span className="text-muted-foreground/60">Consegna: </span>{order.data_consegna || "-"}
+        </span>
         <span className="hidden truncate text-xs text-muted-foreground md:inline">
           <span className="text-muted-foreground/60">Carico: </span>{order.preso_in_carico_da || "-"}
         </span>
         <span className="hidden truncate text-xs text-muted-foreground lg:inline">
-          <span className="text-muted-foreground/60">Lav: </span>{order.dipendente || "-"}
+          <span className="text-muted-foreground/60">Lavorazione: </span>{order.dipendente || "-"}
         </span>
+        <Badge variant={statusColor(order.stato) as "default" | "secondary" | "outline"} className="shrink-0 text-[10px]">
+          {order.stato}
+        </Badge>
       </div>
       <div className="flex shrink-0 items-center gap-1">
-        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onNote(order)}>
+        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); onNote(order); }}>
           <StickyNote className="h-3.5 w-3.5" />
         </Button>
-        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onEdit(order)}>
+        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); onEdit(order); }}>
           <Pencil className="h-3.5 w-3.5" />
         </Button>
         {isAdmin && (
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onDelete(order.id_ordine)}>
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); onDelete(order.id_ordine); }}>
             <Trash2 className="h-3.5 w-3.5 text-destructive" />
           </Button>
         )}
@@ -176,6 +164,7 @@ const Dashboard = () => {
   const [noteOrder, setNoteOrder] = useState<Order | null>(null);
   const [noteText, setNoteText] = useState("");
   const [viewMode, setViewMode] = useState<string>("cards");
+  const [detailOrder, setDetailOrder] = useState<Order | null>(null);
 
   if (!user) return <Navigate to="/accedi" replace />;
 
@@ -213,6 +202,7 @@ const Dashboard = () => {
     onNote: (o: Order) => { setNoteOrder(o); setNoteText(""); },
     onEdit: (o: Order) => setEditingOrder({ ...o }),
     onDelete: handleDelete,
+    onDetails: (o: Order) => setDetailOrder(o),
   });
 
   return (
@@ -255,6 +245,60 @@ const Dashboard = () => {
           </div>
         )}
       </div>
+
+      {/* Details Dialog */}
+      <Dialog open={!!detailOrder} onOpenChange={(open) => !open && setDetailOrder(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Dettagli Ordine - {detailOrder?.id_ordine}</DialogTitle>
+          </DialogHeader>
+          {detailOrder && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <img
+                  src={`https://mc-heads.net/avatar/${detailOrder.nickname_minecraft || detailOrder.cliente}/48`}
+                  alt={detailOrder.cliente}
+                  className="h-12 w-12 rounded"
+                />
+                <div>
+                  <p className="font-bold text-foreground">{detailOrder.cliente}</p>
+                  <p className="text-sm text-muted-foreground">{detailOrder.azienda}</p>
+                </div>
+                <Badge variant={statusColor(detailOrder.stato) as "default" | "secondary" | "outline"} className="ml-auto">
+                  {detailOrder.stato}
+                </Badge>
+              </div>
+              <div className="grid grid-cols-2 gap-2 rounded-md border border-border p-3 text-sm">
+                <div><span className="text-muted-foreground">Data:</span> <span className="text-foreground">{detailOrder.data}</span></div>
+                <div><span className="text-muted-foreground">Consegna:</span> <span className="text-foreground">{detailOrder.data_consegna || "-"}</span></div>
+                <div><span className="text-muted-foreground">Contatto:</span> <span className="text-foreground">{detailOrder.contatto}</span></div>
+                <div><span className="text-muted-foreground">Autore consegna:</span> <span className="text-foreground">{detailOrder.autore_consegna || "-"}</span></div>
+                <div><span className="text-muted-foreground">Preso in carico da:</span> <span className="text-foreground">{detailOrder.preso_in_carico_da || "-"}</span></div>
+                <div><span className="text-muted-foreground">Lavorazione:</span> <span className="text-foreground">{detailOrder.dipendente || "-"}</span></div>
+                <div><span className="text-muted-foreground">DDT:</span> <span className="text-foreground">{detailOrder.ddt_consegnato ? "✅" : "❌"}</span></div>
+                <div><span className="text-muted-foreground">MC:</span> <span className="text-foreground">{detailOrder.nickname_minecraft}</span></div>
+              </div>
+              {detailOrder.prodotti.length > 0 && (
+                <div className="rounded-md border border-border p-3">
+                  <p className="mb-2 text-sm font-semibold text-foreground">Prodotti</p>
+                  {detailOrder.prodotti.map((p, i) => (
+                    <div key={i} className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">{p.name} x{p.quantity}</span>
+                      <span className="text-foreground">€{p.price * p.quantity}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {detailOrder.note && (
+                <div className="whitespace-pre-wrap rounded-md bg-accent p-3 text-sm text-muted-foreground">
+                  <p className="mb-1 text-xs font-semibold text-foreground">Note</p>
+                  {detailOrder.note}
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Dialog */}
       <Dialog open={!!editingOrder} onOpenChange={(open) => !open && setEditingOrder(null)}>
