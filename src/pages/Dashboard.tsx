@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate, useNavigate } from "react-router-dom";
-import { Pencil, Trash2, StickyNote, MoreHorizontal, ExternalLink, LayoutGrid, List, User } from "lucide-react";
+import { Pencil, Trash2, StickyNote, MoreHorizontal, ExternalLink, LayoutGrid, List } from "lucide-react";
 import { toast } from "sonner";
 
 interface Order {
@@ -122,9 +122,11 @@ const OrderCardView = ({ order, isAdmin, onNote, onEdit, onDelete }: OrderAction
         <p><strong>In lavorazione da:</strong> {order.dipendente || "-"}</p>
       </div>
       <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
-          <User className="h-4 w-4 text-muted-foreground" />
-        </div>
+        <img
+          src={`https://mc-heads.net/avatar/${order.nickname_minecraft || order.cliente}/32`}
+          alt={order.cliente}
+          className="h-8 w-8 rounded"
+        />
         <OrderActions order={order} isAdmin={isAdmin} onNote={onNote} onEdit={onEdit} onDelete={onDelete} />
       </div>
     </CardContent>
@@ -136,12 +138,17 @@ const OrderCompactView = ({ order, isAdmin, onNote, onEdit, onDelete }: OrderAct
     <CardContent className="flex items-center justify-between gap-3 p-3">
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <span className="shrink-0 font-mono text-xs font-bold text-foreground">{order.id_ordine}</span>
-        <span className="hidden text-xs text-muted-foreground sm:inline">{order.data}</span>
+        <span className="hidden text-xs text-muted-foreground sm:inline">
+          <span className="hidden text-muted-foreground/60 md:inline">Data: </span>{order.data}
+        </span>
         <Badge variant={statusColor(order.stato) as "default" | "secondary" | "outline"} className="shrink-0 text-[10px]">
           {order.stato}
         </Badge>
         <span className="hidden truncate text-xs text-muted-foreground md:inline">
-          {order.preso_in_carico_da || "-"}
+          <span className="text-muted-foreground/60">Carico: </span>{order.preso_in_carico_da || "-"}
+        </span>
+        <span className="hidden truncate text-xs text-muted-foreground lg:inline">
+          <span className="text-muted-foreground/60">Lav: </span>{order.dipendente || "-"}
         </span>
       </div>
       <div className="flex shrink-0 items-center gap-1">

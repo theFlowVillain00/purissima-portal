@@ -67,10 +67,10 @@ const Ordini = () => {
   };
 
   return (
-    <div className="container mx-auto min-h-[calc(100vh-8rem)] px-4 py-16">
-      <div className="mb-12 text-center">
-        <h1 className="mb-4 font-serif text-4xl font-bold text-foreground">Ordini</h1>
-        <p className="mx-auto max-w-2xl text-muted-foreground">
+    <div className="container mx-auto min-h-[calc(100vh-5rem)] px-4 py-6">
+      <div className="mb-4 text-center">
+        <h1 className="mb-1 font-serif text-2xl font-bold text-foreground">Ordini</h1>
+        <p className="text-sm text-muted-foreground">
           Seleziona i prodotti che desideri acquistare.
         </p>
       </div>
