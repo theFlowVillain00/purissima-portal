@@ -10,7 +10,7 @@ const Home = () => {
   ];
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="h-full">
       {/* Hero Section with Opening Hours overlay */}
       <section className="relative h-full w-full overflow-hidden">
         <img
