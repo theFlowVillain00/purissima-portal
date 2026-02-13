@@ -69,12 +69,17 @@ interface OrderActionsProps {
   onDetails: (order: Order) => void;
 }
 
-const OrderActions = ({ order, isAdmin, onNote, onEdit, onDelete }: Omit<OrderActionsProps, 'onDetails'>) => (
+const OrderActions = ({ order, isAdmin, onNote, onEdit, onDelete, onDetails }: OrderActionsProps) => (
   <div className="flex items-center gap-2">
     <Button variant="ghost" size="sm" className="flex h-auto flex-col items-center gap-0.5 px-2 py-1"
       onClick={(e) => { e.stopPropagation(); onNote(order); }}>
       <StickyNote className="h-3.5 w-3.5" />
       <span className="text-[10px]">Note</span>
+    </Button>
+    <Button variant="ghost" size="sm" className="flex h-auto flex-col items-center gap-0.5 px-2 py-1"
+      onClick={(e) => { e.stopPropagation(); onDetails(order); }}>
+      <MoreHorizontal className="h-3.5 w-3.5" />
+      <span className="text-[10px]">Dettagli</span>
     </Button>
     <Button variant="ghost" size="sm" className="flex h-auto flex-col items-center gap-0.5 px-2 py-1"
       onClick={(e) => { e.stopPropagation(); onEdit(order); }}>
@@ -104,15 +109,13 @@ const OrderCardView = ({ order, isAdmin, onNote, onEdit, onDelete, onDetails }: 
         <p><strong>Preso in carico da:</strong> {order.preso_in_carico_da || "-"}</p>
         <p><strong>Lavorazione:</strong> {order.dipendente || "-"}</p>
       </div>
-      <div className="mt-3 flex items-center justify-center border-t border-border pt-3">
-        <div className="flex items-center gap-3">
-          <img
-            src={`https://mc-heads.net/avatar/${order.nickname_minecraft || order.cliente}/32`}
-            alt={order.cliente}
-            className="h-8 w-8 rounded"
-          />
-          <OrderActions order={order} isAdmin={isAdmin} onNote={onNote} onEdit={onEdit} onDelete={onDelete} />
-        </div>
+      <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
+        <img
+          src={`https://mc-heads.net/avatar/${order.nickname_minecraft || order.cliente}/32`}
+          alt={order.cliente}
+          className="h-8 w-8 rounded"
+        />
+        <OrderActions order={order} isAdmin={isAdmin} onNote={onNote} onEdit={onEdit} onDelete={onDelete} onDetails={onDetails} />
       </div>
     </CardContent>
   </Card>
