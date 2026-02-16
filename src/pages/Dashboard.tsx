@@ -67,27 +67,23 @@ interface OrderActionsProps {
 }
 
 const OrderActions = ({ order, isAdmin, onNote, onEdit, onDelete, onDetails }: OrderActionsProps) => (
-  <div className="flex items-center gap-2">
-    <Button variant="ghost" size="sm" className="flex h-auto flex-col items-center gap-0.5 px-2 py-1"
-      onClick={(e) => { e.stopPropagation(); onNote(order); }}>
-      <StickyNote className="h-3.5 w-3.5" />
-      <span className="text-[10px]">Note</span>
+  <div className="flex items-center gap-1">
+    <Button variant="ghost" size="icon" className="h-7 w-7"
+      onClick={(e) => { e.stopPropagation(); onNote(order); }} title="Note">
+      <StickyNote className="h-4 w-4" />
     </Button>
-    <Button variant="ghost" size="sm" className="flex h-auto flex-col items-center gap-0.5 px-2 py-1"
-      onClick={(e) => { e.stopPropagation(); onDetails(order); }}>
-      <MoreHorizontal className="h-3.5 w-3.5" />
-      <span className="text-[10px]">Dettagli</span>
+    <Button variant="ghost" size="icon" className="h-7 w-7"
+      onClick={(e) => { e.stopPropagation(); onDetails(order); }} title="Dettagli">
+      <MoreHorizontal className="h-4 w-4" />
     </Button>
-    <Button variant="ghost" size="sm" className="flex h-auto flex-col items-center gap-0.5 px-2 py-1"
-      onClick={(e) => { e.stopPropagation(); onEdit(order); }}>
-      <Pencil className="h-3.5 w-3.5" />
-      <span className="text-[10px]">Modifica</span>
+    <Button variant="ghost" size="icon" className="h-7 w-7"
+      onClick={(e) => { e.stopPropagation(); onEdit(order); }} title="Modifica">
+      <Pencil className="h-4 w-4" />
     </Button>
     {isAdmin && (
-      <Button variant="ghost" size="sm" className="flex h-auto flex-col items-center gap-0.5 px-2 py-1"
-        onClick={(e) => { e.stopPropagation(); onDelete(order.id_ordine); }}>
-        <Trash2 className="h-3.5 w-3.5 text-destructive" />
-        <span className="text-[10px]">Elimina</span>
+      <Button variant="ghost" size="icon" className="h-7 w-7"
+        onClick={(e) => { e.stopPropagation(); onDelete(order.id_ordine); }} title="Elimina">
+        <Trash2 className="h-4 w-4 text-destructive" />
       </Button>
     )}
   </div>
@@ -106,12 +102,7 @@ const OrderCardView = ({ order, isAdmin, onNote, onEdit, onDelete, onDetails }: 
         <p><strong>Preso in carico da:</strong> {order.preso_in_carico_da || "-"}</p>
         <p><strong>Lavorazione:</strong> {order.dipendente || "-"}</p>
       </div>
-      <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
-        <img
-          src={`https://mc-heads.net/avatar/${order.nickname_minecraft || order.cliente}/32`}
-          alt={order.cliente}
-          className="h-8 w-8 rounded"
-        />
+      <div className="mt-3 flex justify-end border-t border-border pt-3">
         <OrderActions order={order} isAdmin={isAdmin} onNote={onNote} onEdit={onEdit} onDelete={onDelete} onDetails={onDetails} />
       </div>
     </CardContent>
