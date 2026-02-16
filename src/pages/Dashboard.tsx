@@ -106,12 +106,7 @@ const OrderCardView = ({ order, isAdmin, onNote, onEdit, onDelete, onDetails }: 
         <p><strong>Preso in carico da:</strong> {order.preso_in_carico_da || "-"}</p>
         <p><strong>Lavorazione:</strong> {order.dipendente || "-"}</p>
       </div>
-      <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
-        <img
-          src={`https://mc-heads.net/avatar/${order.nickname_minecraft || order.cliente}/32`}
-          alt={order.cliente}
-          className="h-8 w-8 rounded"
-        />
+      <div className="mt-3 flex items-center justify-center border-t border-border pt-3">
         <OrderActions order={order} isAdmin={isAdmin} onNote={onNote} onEdit={onEdit} onDelete={onDelete} onDetails={onDetails} />
       </div>
     </CardContent>
