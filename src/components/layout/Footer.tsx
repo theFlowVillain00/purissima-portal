@@ -22,16 +22,12 @@ const Footer = () => {
           <div className="flex items-center gap-3">
             <Droplet className="h-4 w-4 text-primary" />
             <span className="text-sm font-bold text-secondary-foreground">Purissima™</span>
-            <span className="hidden text-xs text-secondary-foreground/60 sm:inline">—</span>
-            <span className="hidden text-xs text-secondary-foreground/70 sm:inline">
-              ​
-            </span>
             <span className="hidden font-mono text-xs text-secondary-foreground/60 md:inline">
               · X:{coordinates.x} Y:{coordinates.y} Z:{coordinates.z}
             </span>
           </div>
           <span className="text-secondary-foreground/70 italic text-sm">
-            fatto con il 💖 da{" "}
+            fatto con il 💖da{" "}
             <a href="https://t.me/mordicchio00" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
               uli
             </a>
