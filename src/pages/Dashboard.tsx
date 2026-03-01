@@ -11,7 +11,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate, useNavigate } from "react-router-dom";
-import { Pencil, Trash2, StickyNote, MoreHorizontal, ExternalLink, LayoutGrid, List, ArrowUpDown } from "lucide-react";
+import { Pencil, Trash2, StickyNote, MoreHorizontal, ExternalLink, LayoutGrid, List, ArrowUpDown, Package } from "lucide-react";
 import { toast } from "sonner";
 import { getOrders, saveOrders, type Order } from "@/lib/orderStore";
 import {
@@ -276,11 +276,9 @@ const Dashboard = () => {
           {detailOrder && (
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <img
-                  src={`https://mc-heads.net/avatar/${detailOrder.nickname_minecraft || detailOrder.cliente}/48`}
-                  alt={detailOrder.cliente}
-                  className="h-12 w-12 rounded"
-                />
+                <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary/10">
+                  <Package className="h-6 w-6 text-primary" />
+                </div>
                 <div>
                   <p className="font-bold text-foreground">{detailOrder.cliente}</p>
                   <p className="text-sm text-muted-foreground">{detailOrder.azienda}</p>
