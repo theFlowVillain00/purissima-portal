@@ -275,17 +275,12 @@ const Dashboard = () => {
           </DialogHeader>
           {detailOrder && (
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <img
-                  src={`https://mc-heads.net/avatar/${detailOrder.nickname_minecraft || detailOrder.cliente}/48`}
-                  alt={detailOrder.cliente}
-                  className="h-12 w-12 rounded"
-                />
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-bold text-foreground">{detailOrder.cliente}</p>
+                  <p className="text-lg font-bold text-foreground">{detailOrder.cliente}</p>
                   <p className="text-sm text-muted-foreground">{detailOrder.azienda}</p>
                 </div>
-                <Badge variant={statusColor(detailOrder.stato) as "default" | "secondary" | "outline"} className="ml-auto">
+                <Badge variant={statusColor(detailOrder.stato) as "default" | "secondary" | "outline"}>
                   {detailOrder.stato}
                 </Badge>
               </div>
