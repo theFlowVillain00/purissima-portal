@@ -27,7 +27,7 @@ const Footer = () => {
             </span>
           </div>
           <div className="text-sm text-secondary-foreground/70 italic">
-            fatto con 💖 da{" "}
+            Creato con 🧡 da{" "}
             <a
               href="https://t.me/mordicchio00"
               target="_blank"
