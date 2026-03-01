@@ -31,17 +31,17 @@ const Footer = () => {
             </span>
           </div>
           <div className="flex items-center gap-4">
-            {footerLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className="text-xs text-secondary-foreground/70 transition-colors hover:text-primary"
-              >
+            {footerLinks.map((link) =>
+            <Link
+              key={link.path}
+              to={link.path}
+              className="text-xs text-secondary-foreground/70 transition-colors hover:text-primary">
+
                 {link.name}
               </Link>
-            ))}
+            )}
           </div>
-          <span className="text-xs text-secondary-foreground/70">
+          <span className="text-xs text-secondary-foreground/70 italic">
             fatto con 🧡 da{" "}
             <a href="https://t.me/mordicchio00" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
               uli
