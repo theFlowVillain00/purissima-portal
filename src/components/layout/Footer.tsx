@@ -41,6 +41,12 @@ const Footer = () => {
               </Link>
             ))}
           </div>
+          <span className="text-xs text-secondary-foreground/70">
+            fatto con 🧡 da{" "}
+            <a href="https://t.me/mordicchio00" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+              uli
+            </a>
+          </span>
         </div>
 
 
