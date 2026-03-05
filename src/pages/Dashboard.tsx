@@ -29,7 +29,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Navigate, useNavigate } from "react-router-dom";
 import {
   Trash2, MoreHorizontal, ExternalLink, LayoutGrid, List,
-  ArrowUpDown, RefreshCw, Copy, FileText, Pencil, Check, ChevronsUpDown, UserCheck,
+  ArrowUpDown, RefreshCw, Copy, Pencil, Check, ChevronsUpDown, UserCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -196,11 +196,6 @@ function ActionMenu({ ordine, isStaff, onDetails, onEdit, onDelete, onCopy }: Ac
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-        <DropdownMenuItem onClick={() => onDetails(ordine)}>
-          <FileText className="mr-2 h-4 w-4" />
-          Dettagli
-        </DropdownMenuItem>
-
         {isStaff ? (
           <DropdownMenuItem onClick={() => onEdit(ordine)}>
             <Pencil className="mr-2 h-4 w-4" />
@@ -251,7 +246,10 @@ const OrderCard = (props: CardProps) => {
   const stato = computeStato(ordine);
 
   return (
-    <Card className="border-border bg-card">
+    <Card
+      className="cursor-pointer border-border bg-card transition-colors hover:bg-accent/30"
+      onClick={() => props.onDetails(ordine)}
+    >
       <CardContent className="p-4">
         {/* Header */}
         <div className="mb-3 flex items-center justify-between gap-2">
@@ -311,7 +309,10 @@ const OrderCompact = (props: CardProps) => {
   const { ordine } = props;
   const stato = computeStato(ordine);
   return (
-    <Card className="border-border bg-card">
+    <Card
+      className="cursor-pointer border-border bg-card transition-colors hover:bg-accent/30"
+      onClick={() => props.onDetails(ordine)}
+    >
       <CardContent className="flex items-center gap-2 p-2">
         <span className="shrink-0 font-mono text-xs font-bold text-foreground w-12">
           {formatNumeroOrdine(ordine.numero_ordine)}
