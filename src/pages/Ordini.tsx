@@ -2,87 +2,91 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { ShoppingCart, Trash2, Send, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
-import { addOrder, generateOrderId } from "@/lib/orderStore";
+import { useArticoli } from "@/hooks/useArticoli";
+import { useCreateOrdine } from "@/hooks/useOrdini";
+import type { Articolo } from "@/lib/types";
 
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  category: string;
+interface CartItem {
+  articolo: Articolo;
+  quantita: number;
 }
-
-interface CartItem extends Product {
-  quantity: number;
-}
-
-const products: Product[] = [
-  { id: "1", name: "Diamanti x64", price: 500, category: "Minerali" },
-  { id: "2", name: "Netherite Ingot x16", price: 800, category: "Minerali" },
-  { id: "3", name: "Enchanted Pickaxe", price: 350, category: "Strumenti" },
-  { id: "4", name: "Enchanted Sword", price: 400, category: "Armi" },
-  { id: "5", name: "Elytra", price: 1200, category: "Equipaggiamento" },
-  { id: "6", name: "Shulker Box", price: 200, category: "Storage" },
-  { id: "7", name: "Beacon", price: 750, category: "Blocchi" },
-  { id: "8", name: "Golden Apple x16", price: 300, category: "Cibo" },
-];
 
 const Ordini = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { data: articoli = [], isLoading, isError } = useArticoli();
+  const createOrdine = useCreateOrdine();
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [staffViewPublic, setStaffViewPublic] = useState(true);
 
   if (!user) {
     navigate("/accedi", { replace: true });
     return null;
   }
 
-  const getQuantity = (id: string) => cart.find((i) => i.id === id)?.quantity || 0;
+  const isStaff = user.role === "staff";
+  // Staff can toggle between public/private pricing; clients always use their own tier
+  const viewAsPublic = isStaff ? staffViewPublic : user.isPublic;
 
-  const updateQuantity = (product: Product, delta: number) => {
+  // Pick the right price for this user's company type
+  const getPrice = (a: Articolo): number =>
+    viewAsPublic ? (a.prezzo_pubblico ?? 0) : (a.prezzo_privato ?? 0);
+
+  const nomeAzienda = isStaff ? "Purissima" : user.azienda;
+  const categoriaAzienda = viewAsPublic
+    ? "Prodotti per aziende pubbliche"
+    : "Prodotti per aziende private";
+
+  const getQuantita = (id: string) =>
+    cart.find((i) => i.articolo.id === id)?.quantita ?? 0;
+
+  const updateQuantita = (articolo: Articolo, delta: number) => {
     setCart((prev) => {
-      const existing = prev.find((i) => i.id === product.id);
+      const existing = prev.find((i) => i.articolo.id === articolo.id);
       if (!existing) {
-        if (delta > 0) return [...prev, { ...product, quantity: 1 }];
+        if (delta > 0) return [...prev, { articolo, quantita: 1 }];
         return prev;
       }
-      const newQty = existing.quantity + delta;
-      if (newQty <= 0) return prev.filter((i) => i.id !== product.id);
-      return prev.map((i) => (i.id === product.id ? { ...i, quantity: newQty } : i));
+      const newQty = existing.quantita + delta;
+      if (newQty <= 0) return prev.filter((i) => i.articolo.id !== articolo.id);
+      return prev.map((i) =>
+        i.articolo.id === articolo.id ? { ...i, quantita: newQty } : i
+      );
     });
   };
 
-  const removeFromCart = (id: string) => setCart((prev) => prev.filter((i) => i.id !== id));
+  const removeFromCart = (id: string) =>
+    setCart((prev) => prev.filter((i) => i.articolo.id !== id));
 
-  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalPrice = cart.reduce(
+    (sum, item) => sum + getPrice(item.articolo) * item.quantita,
+    0
+  );
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (cart.length === 0) {
       toast.error("Il carrello è vuoto");
       return;
     }
-    const newOrder = {
-      id_ordine: generateOrderId(),
-      cliente: user.username,
-      contatto: "",
-      azienda: "",
-      data: new Date().toISOString().split("T")[0],
-      dipendente: "",
-      data_consegna: "",
-      autore_consegna: "",
-      preso_in_carico_da: "",
-      stato: "In attesa",
-      ddt_consegnato: false,
-      note: "",
-      nickname_minecraft: user.username,
-      nickname_telegram: "",
-      prodotti: cart.map((item) => ({ name: item.name, quantity: item.quantity, price: item.price })),
-    };
-    addOrder(newOrder);
-    toast.success("Ordine inviato con successo! Ti contatteremo su Telegram.");
-    setCart([]);
+    try {
+      await createOrdine.mutateAsync({
+        creatoDa: user.id,
+        cart: cart.map((item) => ({
+          articolo_id: item.articolo.id,
+          quantita: item.quantita,
+        })),
+      });
+      toast.success("Ordine inviato! Ti contatteremo presto.");
+      setCart([]);
+    } catch (err) {
+      console.error(err);
+      toast.error("Errore nell'invio dell'ordine. Riprova.");
+    }
   };
 
   return (
@@ -95,38 +99,76 @@ const Ordini = () => {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-3">
+        {/* Product list */}
         <div className="lg:col-span-2">
-          <div>
-            <div className="mb-4 flex items-center justify-between">
+          <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
+            <div>
               <h2 className="text-xl font-bold text-foreground">
-                Prodotti Disponibili ({products.length})
+                Prodotti Disponibili
+                {!isLoading && ` (${articoli.length})`}
               </h2>
-              <span className="text-sm text-muted-foreground">Prezzo per stack da 64</span>
+              <p className="text-sm text-muted-foreground">
+                {nomeAzienda}
+                <span className="mx-2 text-border">·</span>
+                {categoriaAzienda}
+              </p>
             </div>
+            <div className="flex items-center gap-3">
+              {isStaff && (
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="pricing-switch" className="text-xs text-muted-foreground">
+                    {staffViewPublic ? "Prezzi pubblici" : "Prezzi privati"}
+                  </Label>
+                  <Switch
+                    id="pricing-switch"
+                    checked={staffViewPublic}
+                    onCheckedChange={setStaffViewPublic}
+                  />
+                </div>
+              )}
+              <span className="text-sm text-muted-foreground">Prezzo unitario</span>
+            </div>
+          </div>
+
+          {isLoading && (
+            <p className="py-8 text-center text-muted-foreground">Caricamento prodotti…</p>
+          )}
+
+          {isError && (
+            <p className="py-8 text-center text-destructive">
+              Errore nel caricamento dei prodotti.
+            </p>
+          )}
+
+          {!isLoading && !isError && (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {products.map((product) => {
-                const qty = getQuantity(product.id);
+              {articoli.map((articolo) => {
+                const qty = getQuantita(articolo.id);
+                const price = getPrice(articolo);
                 return (
                   <div
-                    key={product.id}
+                    key={articolo.id}
                     className="flex items-center justify-between rounded-lg border border-border bg-card p-4 transition-colors"
                   >
                     <div>
-                      <p className="font-semibold text-card-foreground">{product.name}</p>
-                      <p className="text-sm text-primary font-bold">€{product.price}</p>
+                      <p className="font-semibold text-card-foreground">{articolo.nome}</p>
+                      {articolo.descrizione && (
+                        <p className="text-xs text-muted-foreground">{articolo.descrizione}</p>
+                      )}
+                      <p className="text-sm font-bold text-primary">€{price}</p>
                     </div>
-                    <div className="flex items-center gap-0 rounded-md border border-border overflow-hidden">
+                    <div className="flex items-center gap-0 overflow-hidden rounded-md border border-border">
                       <button
-                        onClick={() => updateQuantity(product, -1)}
+                        onClick={() => updateQuantita(articolo, -1)}
                         className="flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
                       >
                         <Minus className="h-4 w-4" />
                       </button>
-                      <span className="flex h-9 w-10 items-center justify-center text-sm font-medium text-foreground border-x border-border">
+                      <span className="flex h-9 w-10 items-center justify-center border-x border-border text-sm font-medium text-foreground">
                         {qty}
                       </span>
                       <button
-                        onClick={() => updateQuantity(product, 1)}
+                        onClick={() => updateQuantita(articolo, 1)}
                         className="flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
                       >
                         <Plus className="h-4 w-4" />
@@ -136,7 +178,7 @@ const Ordini = () => {
                 );
               })}
             </div>
-          </div>
+          )}
         </div>
 
         {/* Cart */}
@@ -154,23 +196,39 @@ const Ordini = () => {
               ) : (
                 <div className="space-y-3">
                   {cart.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between rounded-md border border-border bg-accent/50 p-2">
+                    <div
+                      key={item.articolo.id}
+                      className="flex items-center justify-between rounded-md border border-border bg-accent/50 p-2"
+                    >
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-card-foreground">{item.name}</p>
-                        <p className="text-xs text-muted-foreground">{item.quantity}x €{item.price}</p>
+                        <p className="text-sm font-medium text-card-foreground">
+                          {item.articolo.nome}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {item.quantita}x €{getPrice(item.articolo)}
+                        </p>
                       </div>
-                      <button onClick={() => removeFromCart(item.id)} className="rounded p-1 text-destructive transition-colors hover:bg-destructive/10">
+                      <button
+                        onClick={() => removeFromCart(item.articolo.id)}
+                        className="rounded p-1 text-destructive transition-colors hover:bg-destructive/10"
+                      >
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   ))}
+
                   <div className="border-t border-border pt-3">
                     <div className="mb-4 flex justify-between text-lg font-bold">
                       <span className="text-card-foreground">Totale:</span>
                       <span className="text-primary">€{totalPrice}</span>
                     </div>
-                    <Button onClick={handleSubmit} className="w-full">
-                      <Send className="mr-2 h-4 w-4" /> Invia Ordine
+                    <Button
+                      onClick={handleSubmit}
+                      className="w-full"
+                      disabled={createOrdine.isPending}
+                    >
+                      <Send className="mr-2 h-4 w-4" />
+                      {createOrdine.isPending ? "Invio in corso…" : "Invia Ordine"}
                     </Button>
                   </div>
                 </div>

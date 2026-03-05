@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,27 +9,33 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const Accedi = () => {
-  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const { login, user } = useAuth();
   const navigate = useNavigate();
 
-  if (user) {
-    navigate("/dashboard", { replace: true });
-    return null;
-  }
+  // Navigate only once the user state is actually populated —
+  // doing it inside handleSubmit is too early (user is still null at that point).
+  useEffect(() => {
+    if (user) navigate("/dashboard", { replace: true });
+  }, [user, navigate]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.username || !formData.password) {
+    if (!username || !password) {
       toast.error("Per favore compila tutti i campi");
       return;
     }
-    const success = login(formData.username, formData.password);
-    if (success) {
+    setSubmitting(true);
+    const result = await login(username.trim(), password);
+    if (result.ok) {
       toast.success("Accesso effettuato!");
-      navigate("/dashboard");
+      // keep submitting=true as a visual "loading" indicator;
+      // the useEffect above will navigate when onAuthStateChange sets the user
     } else {
-      toast.error("Credenziali non valide");
+      setSubmitting(false);
+      toast.error(result.error ?? "Credenziali non valide");
     }
   };
 
@@ -49,25 +55,35 @@ const Accedi = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="username">Nome Utente</Label>
-              <Input
-                id="username"
-                type="text"
-                placeholder="Il tuo nome utente"
-                value={formData.username}
-                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-              />
+              {/* Input + @purissima.com suffix shown inline */}
+              <div className="flex items-center overflow-hidden rounded-md border border-input bg-background ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="..."
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  autoComplete="username"
+                  className="border-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+                <span className="select-none whitespace-nowrap pr-3 text-sm text-muted-foreground">
+                </span>
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="La tua password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                placeholder="..."
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
               />
             </div>
-            <Button type="submit" className="w-full">Accedi</Button>
+            <Button type="submit" className="w-full" disabled={submitting}>
+              {submitting ? "Accesso in corso…" : "Accedi"}
+            </Button>
           </form>
         </CardContent>
       </Card>
