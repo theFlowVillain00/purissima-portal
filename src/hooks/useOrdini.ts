@@ -125,14 +125,16 @@ export function useCreateOrdine() {
     mutationFn: async ({
       creatoDa,
       cart,
+      notes,
     }: {
       creatoDa: string;
       cart: Array<{ articolo_id: string; quantita: number }>;
+      notes?: string;
     }) => {
       // Step 1 — order header
       const { data: ordine, error: ordineErr } = await supabase
         .from("ordini")
-        .insert({ creato_da: creatoDa })
+        .insert({ creato_da: creatoDa, ...(notes ? { notes } : {}) })
         .select("id")
         .single();
       if (ordineErr || !ordine) throw new Error(ordineErr?.message ?? "Errore creazione ordine");

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { ShoppingCart, Trash2, Send, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -22,6 +23,7 @@ const Ordini = () => {
   const { data: articoli = [], isLoading, isError } = useArticoli();
   const createOrdine = useCreateOrdine();
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [orderNote, setOrderNote] = useState("");
   const [staffViewPublic, setStaffViewPublic] = useState(true);
 
   if (!user) {
@@ -80,9 +82,11 @@ const Ordini = () => {
           articolo_id: item.articolo.id,
           quantita: item.quantita,
         })),
+        notes: orderNote.trim() || undefined,
       });
       toast.success("Ordine inviato! Ti contatteremo presto.");
       setCart([]);
+      setOrderNote("");
     } catch (err) {
       console.error(err);
       toast.error("Errore nell'invio dell'ordine. Riprova.");
@@ -101,7 +105,7 @@ const Ordini = () => {
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Product list */}
         <div className="lg:col-span-2">
-          <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
+          <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
             <div>
               <h2 className="text-xl font-bold text-foreground">
                 Prodotti Disponibili
@@ -113,22 +117,20 @@ const Ordini = () => {
                 {categoriaAzienda}
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              {isStaff && (
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="pricing-switch" className="text-xs text-muted-foreground">
-                    {staffViewPublic ? "Prezzi pubblici" : "Prezzi privati"}
-                  </Label>
-                  <Switch
-                    id="pricing-switch"
-                    checked={staffViewPublic}
-                    onCheckedChange={setStaffViewPublic}
-                  />
-                </div>
-              )}
-              <span className="text-sm text-muted-foreground">Prezzo unitario</span>
-            </div>
           </div>
+
+          {isStaff && (
+            <div className="mb-4 flex items-center gap-2">
+              <Label htmlFor="pricing-switch" className="text-xs text-muted-foreground">
+                {staffViewPublic ? "Prezzi pubblici" : "Prezzi privati"}
+              </Label>
+              <Switch
+                id="pricing-switch"
+                checked={staffViewPublic}
+                onCheckedChange={setStaffViewPublic}
+              />
+            </div>
+          )}
 
           {isLoading && (
             <p className="py-8 text-center text-muted-foreground">Caricamento prodotti…</p>
@@ -230,6 +232,13 @@ const Ordini = () => {
                       <Send className="mr-2 h-4 w-4" />
                       {createOrdine.isPending ? "Invio in corso…" : "Invia Ordine"}
                     </Button>
+                    <Textarea
+                      className="mt-3 text-sm"
+                      placeholder="Note sull'ordine (opzionale)"
+                      rows={3}
+                      value={orderNote}
+                      onChange={(e) => setOrderNote(e.target.value)}
+                    />
                   </div>
                 </div>
               )}
